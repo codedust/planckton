@@ -1,0 +1,23 @@
+{% extends "timetracker/base.html" %}
+
+{% block title %}{{ employer.name }}{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="page-header">
+      <h1>Home <small></small></h1>
+    </div>
+    {% if employer_list %}
+        <ul>
+        {% for employer in employer_list %}
+            <li><a href="/employer/{{ employer.id }}/">{{ employer.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No projects and employers are available.</p>
+    {% endif %}
+    <div class="page-header">
+      <h2>Add a new employer</h2>
+    </div>
+  </div>
+{% endblock %}
