@@ -1,0 +1,36 @@
+{% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{ error|escape }}</div>
+  {% endfor %}
+{% endif %}
+{% for field in form %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}" class="col-sm-4 control-label">{{ field.label }}</label>
+    <div class="col-sm-8">
+      {% if field.name == 'default_hourly_wage' or field.name == 'hourly_wage' %}
+        <div class="input-group">
+          {{ field }}
+          <div class="input-group-addon">&euro;/&#36;/&pound; per hour</div>
+        </div>
+      {% else %}
+        {{ field }}
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-sm-offset-4 col-sm-8">
+    {% if field.errors %}
+        {% for error in field.errors %}
+          <div class="alert alert-danger margin-bottom" role="alert"><strong>Error!</strong> {{ error|escape }}</div>
+        {% endfor %}
+    {% endif %}
+  </div>
+{% endfor %}
+<div class="form-group">
+  <div class="col-sm-offset-4 col-sm-8">
+    {% if submit_text %}
+      <input type="submit" class="btn btn-default" value="{{ submit_text }}">
+    {% else %}
+      <input type="submit" class="btn btn-default" value="Send">
+    {% endif %}
+  </div>
+</div>

@@ -1,5 +1,13 @@
 body {
   background-color: #fefefe;
   margin: 0;
-  padding: 2em 0 0 0;
+  padding: 2em 0 5em 0;
+}
+
+.maxwidth50 {
+  max-width: 50%;
+}
+
+.margin-bottom {
+  margin-bottom: 2em;
 }

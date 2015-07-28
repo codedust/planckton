@@ -1,23 +1,44 @@
 {% extends "timetracker/base.html" %}
 
-{% block title %}{{ employer.name }}{% endblock %}
+{% block title %}Projects{% endblock %}
 
 {% block content %}
   <div class="container">
-    <div class="page-header">
-      <h1>Home <small></small></h1>
-    </div>
-    {% if employer_list %}
-        <ul>
-        {% for employer in employer_list %}
-            <li><a href="/employer/{{ employer.id }}/">{{ employer.name }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No projects and employers are available.</p>
+    {% if error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> {{ error_message }}
+      </div>
     {% endif %}
-    <div class="page-header">
-      <h2>Add a new employer</h2>
+
+    <ol class="breadcrumb">
+      <li><a href="{% url 'timetracker:index' %}">Projects</a></li>
+    </ol>
+
+    <div class="text-right">
+      <a class="btn btn-primary" href="{% url 'timetracker:createEmployer' %}" role="button">Create a new employer</a>
+      <a class="btn btn-primary" href="{% url 'timetracker:createProject' %}" role="button">Create a new project</a>
     </div>
+
+    <div class="page-header">
+      <h1>Projects <small></small></h1>
+    </div>
+
+    {% if employer_list %}
+      {% for employer in employer_list %}
+      <a name="employer{{ employer.id }}"></a>
+      <h3>{{ employer.name }}</h3>
+      <table class="table table-striped">
+        <tbody>
+        {% for project in employer.project_set.all %}
+          <tr><td>{{project.name}}</td><td>{{project.client_name}}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endfor %}
+    {% else %}
+      <p>No projects and employers are available.</p>
+    {% endif %}
+
   </div>
 {% endblock %}
