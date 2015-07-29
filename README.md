@@ -1,5 +1,5 @@
 # Planckton
-Planckton stands for **Planck** **t**ime **on**line and aims to be a powerful and easy-to-use time tracking software written in Python/Django.
+Planckton stands for **Planck**ton **t**ime **on**line and aims to be a powerful and easy-to-use time tracking software written in Python/Django.
 
 Pull requests, bug reports and feature requests (via github issues) are always welcome. :)
 Feel free to ask for help in the issue tracker, too.

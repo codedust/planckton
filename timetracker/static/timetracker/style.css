@@ -11,3 +11,11 @@ body {
 .margin-bottom {
   margin-bottom: 2em;
 }
+
+.margin-right {
+  margin-right: 1em;
+}
+
+.table-fixed-width {
+  table-layout: fixed;
+}

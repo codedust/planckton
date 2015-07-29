@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm
 
 from .models import Employer, Project
@@ -9,12 +10,15 @@ class BootstrapModelForm(ModelForm):
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
 
-class CreateEmployerForm(BootstrapModelForm):
+class EmployerForm(BootstrapModelForm):
     class Meta:
         model = Employer
         fields = ['name', 'default_hourly_wage']
 
-class CreateProjectForm(BootstrapModelForm):
+class ProjectForm(BootstrapModelForm):
     class Meta:
         model = Project
         fields = ['employer', 'name', 'client_name', 'notes', 'default_hourly_wage']
+
+class DeleteForm(forms.Form):
+    id = forms.IntegerField()
