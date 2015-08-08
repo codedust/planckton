@@ -44,6 +44,22 @@ def create_employer(request):
     })
 
 @login_required
+def edit_employer(request, employer_id):
+    employer = get_object_or_404(Employer, pk=employer_id, user=request.user)
+
+    if request.method == "POST":
+        edit_employer_form = EmployerForm(request.POST, instance=employer)
+        if edit_employer_form.is_valid():
+                edit_employer_form.save()
+                return HttpResponseRedirect(reverse('timetracker:index'))
+    else:
+        edit_employer_form = EmployerForm(instance=employer)
+
+    return render(request, 'timetracker/edit_employer.html', {
+        'form': edit_employer_form,
+    })
+
+@login_required
 def create_project(request):
     if request.method == "POST":
         new_project = Project(user=request.user)
@@ -74,18 +90,11 @@ def edit_project(request, project_id):
         'form': edit_project_form,
     })
 
+
 @login_required
-def edit_employer(request, employer_id):
-    employer = get_object_or_404(Employer, pk=employer_id, user=request.user)
+def show_project(request, project_id):
+    project = get_object_or_404(Project, pk=project_id, user=request.user)
 
-    if request.method == "POST":
-        edit_employer_form = EmployerForm(request.POST, instance=employer)
-        if edit_employer_form.is_valid():
-                edit_employer_form.save()
-                return HttpResponseRedirect(reverse('timetracker:index'))
-    else:
-        edit_employer_form = EmployerForm(instance=employer)
-
-    return render(request, 'timetracker/edit_employer.html', {
-        'form': edit_employer_form,
+    return render(request, 'timetracker/show_project.html', {
+        'project': project,
     })
