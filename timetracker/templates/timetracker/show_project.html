@@ -17,7 +17,7 @@
     </ol>
 
     <div class="page-header">
-      <h2>Project info <small></small></h2>
+      <h2>Project info <small>{{ project.name }}</small></h2>
     </div>
     <dl class="dl-horizontal">
       <dt>Employer</dt><dd>{{ project.employer }}</dd>
@@ -26,7 +26,6 @@
       <dt>Hourly wage</dt><dd>{{ project.default_hourly_wage }}</dd>
       <dt></dt><dd><a href="{% url 'timetracker:edit_project' project.id %}" type="button" class="btn btn-default btn-sm margin-top1" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a></dd>
     </dl>
-<p></p>
 
     <div class="page-header">
       <h2>Working time <small></small></h2>

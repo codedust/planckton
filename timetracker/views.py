@@ -25,7 +25,7 @@ def index(request):
                 project.delete()
 
     return render(request, 'timetracker/index.html', {
-        'employer_list': Employer.objects.all(),
+        'employer_list': Employer.objects.filter(user=request.user)
     })
 
 @login_required
@@ -50,8 +50,8 @@ def edit_employer(request, employer_id):
     if request.method == "POST":
         edit_employer_form = EmployerForm(request.POST, instance=employer)
         if edit_employer_form.is_valid():
-                edit_employer_form.save()
-                return HttpResponseRedirect(reverse('timetracker:index'))
+            edit_employer_form.save()
+            return HttpResponseRedirect(reverse('timetracker:index'))
     else:
         edit_employer_form = EmployerForm(instance=employer)
 
@@ -60,15 +60,17 @@ def edit_employer(request, employer_id):
     })
 
 @login_required
-def create_project(request):
+def create_project(request, employer_id):
     if request.method == "POST":
         new_project = Project(user=request.user)
         create_project_form = ProjectForm(request.POST, instance=new_project)
         if create_project_form.is_valid():
-                create_project_form.save()
-                return HttpResponseRedirect(reverse('timetracker:index'))
+            create_project_form.save()
+            return HttpResponseRedirect(reverse('timetracker:index'))
     else:
-        create_project_form = ProjectForm()
+        employer = get_object_or_404(Employer, pk=employer_id, user=request.user)
+        new_project = Project(employer=employer, user=request.user, default_hourly_wage=employer.default_hourly_wage)
+        create_project_form = ProjectForm(instance=new_project)
 
     return render(request, 'timetracker/create_project.html', {
         'form': create_project_form,
@@ -89,7 +91,6 @@ def edit_project(request, project_id):
     return render(request, 'timetracker/edit_project.html', {
         'form': edit_project_form,
     })
-
 
 @login_required
 def show_project(request, project_id):

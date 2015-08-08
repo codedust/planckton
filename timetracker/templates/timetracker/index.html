@@ -39,8 +39,8 @@
         {% endfor %}
         </tbody>
       </table>
+      <a class="btn btn-default btn-sm" href="{% url 'timetracker:create_project' employer.id %}" role="button"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Create a new project</a>
       {% endfor %}
-      <a class="btn btn-primary btn-sm" href="{% url 'timetracker:create_project' %}" role="button"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Create a new project</a>
     {% else %}
       <p>No projects and employers are available.</p>
       <p><a class="btn btn-primary btn-sm" href="{% url 'timetracker:create_employer' %}" role="button"><span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span> Create a new employer</a></p>

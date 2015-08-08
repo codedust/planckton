@@ -20,5 +20,9 @@ class ProjectForm(BootstrapModelForm):
         model = Project
         fields = ['employer', 'name', 'client_name', 'notes', 'default_hourly_wage']
 
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.fields['employer'].queryset = Employer.objects.filter(user=self.instance.user)
+
 class DeleteForm(forms.Form):
     id = forms.IntegerField()
