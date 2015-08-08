@@ -8,9 +8,11 @@ $(function(){
       },
       function(){
         $(this).removeClass('active');
-      }).click( function(){
-        document.location = $(this).attr('data-href');
       }
     );
+    click_location = $(this).attr('data-href');
+    $(this).children('td').not('.no-td-click').click( function(){
+      document.location = click_location;
+    });
   });
 });

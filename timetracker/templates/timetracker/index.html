@@ -34,8 +34,10 @@
         <tbody>
         {% for project in employer.project_set.all %}
           <tr data-href="{% url 'timetracker:show_project' project.id %}"><td>{{project.name}}</td><td>{{project.client_name}}</td>
-              <td><button type="button" data-toggle="modal" data-target="#deleteProjectModal" onclick="$('#deleteProjectId').val('{{ project.id }}');" class="btn btn-default btn-sm pull-right margin-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
-              <a href="{% url 'timetracker:edit_project' project.id %}" type="button" class="btn btn-default btn-sm pull-right margin-right" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a></td></tr>
+              <td class="no-td-click"><div class="pull-right nowrap">
+                <button type="button" data-toggle="modal" data-target="#deleteProjectModal" onclick="$('#deleteProjectId').val('{{ project.id }}');" class="btn btn-default btn-sm margin-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+                <a href="{% url 'timetracker:edit_project' project.id %}" type="button" class="btn btn-default btn-sm margin-right" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a>
+              </div></td></tr>
         {% endfor %}
         </tbody>
       </table>
