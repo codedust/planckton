@@ -25,7 +25,7 @@ def index(request):
                 project.delete()
 
     return render(request, 'timetracker/index.html', {
-        'employer_list': Employer.objects.filter(user=request.user)
+        'employer_set': Employer.objects.filter(user=request.user)
     })
 
 @login_required
@@ -96,6 +96,14 @@ def edit_project(request, project_id):
 def show_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id, user=request.user)
 
+    if request.method == "POST":
+        if request.POST.get('action', '') == 'delete_timeframe':
+            delete_form = DeleteForm(request.POST)
+            if delete_form.is_valid():
+                timeframe = get_object_or_404(Timeframe, pk=delete_form.cleaned_data['id'], user=request.user)
+                timeframe.delete()
+
     return render(request, 'timetracker/show_project.html', {
         'project': project,
+        'timeframe_set': Timeframe.objects.filter(user=request.user, project=project)
     })
