@@ -14,6 +14,10 @@ body {
   padding: 2em 0 5em 0;
 }
 
+.initiallyhidden {
+  display: none;
+}
+
 .fullwidth {
   width: 100%;
 }
@@ -68,6 +72,21 @@ body {
   margin: 4em 0;
 }
 
+.timeframe-form-popup {
+  position: relative;
+  top: -3em;
+  border: 1px solid lightgray;
+  box-shadow: 0 0 .5em lightgray;
+  padding: 1em;
+}
+
+.timeframe-running {
+  background-color: #FFD9A9;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+  animation: 2s linear 0s normal none infinite running progress-bar-stripes;
+}
+
 .timeframe-table thead th {
   padding: 1em;
   border-bottom: 1px solid lightgray;
@@ -82,6 +101,7 @@ body {
 }
 
 .a-padding1 {
+  display: inline-block;
   padding: 1em;
   cursor: pointer;
 }
