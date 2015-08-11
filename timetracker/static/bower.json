@@ -1,0 +1,22 @@
+{
+  "name": "planckton",
+  "version": "0.0.0",
+  "homepage": "https://github.com/codedust/planckton",
+  "authors": [
+    "codedust <codedust@users.noreply.github.com>"
+  ],
+  "description": "Planckton time tracking software",
+  "license": "AGPLv3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootstrap-datepicker": "~1.4.0",
+    "jquery": "~2.1.4"
+  }
+}
