@@ -66,6 +66,10 @@ body {
   font-size: 2.2em;
 }
 
+.timepicker input {
+  width: 5em;
+}
+
 .timeframe-form {
   border: 1px solid lightgray;
   box-shadow: 0 0 .5em lightgray;
@@ -74,6 +78,8 @@ body {
 
 .timeframe-form-popup {
   position: relative;
+  width: 550px;
+  left: 1em;
   top: -3em;
   border: 1px solid lightgray;
   box-shadow: 0 0 .5em lightgray;
