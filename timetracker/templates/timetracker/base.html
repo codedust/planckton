@@ -12,6 +12,28 @@
     <link href="{% static 'timetracker/style.css' %}" rel="stylesheet">
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">
+            <img alt="Brand" src="{% static 'timetracker/favicon_128.png' %}">
+          </a>
+          <a class="navbar-brand" href="/">Planckton</a>
+        </div>
+
+        <div class="collapse navbar-collapse">
+          {% if user.is_authenticated %}
+          <a class="btn btn-default navbar-btn navbar-right" href="{% url 'timetracker:logout' %}" role="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp; Logout</a>
+          <p class="navbar-text navbar-right" style="margin-right: 1em;">Signed in as <em>{{ user.username }}</em></p>
+          {% else %}
+          <a class="btn btn-default navbar-btn navbar-right" href="{% url 'timetracker:login' %}" role="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp; Login</a>
+          {% endif %}
+        </div>
+
+      </div>
+    </nav>
+
     {% block content %}{% endblock %}
 
     <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>

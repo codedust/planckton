@@ -1,11 +1,16 @@
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .forms import EmployerForm, ProjectForm, TimeframeForm, DeleteForm
 from .models import Employer, Project, Timeframe
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
 
 def index(request):
     if not request.user.is_authenticated():

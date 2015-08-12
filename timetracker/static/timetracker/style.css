@@ -11,7 +11,7 @@
 body {
   background-color: #fefefe;
   margin: 0;
-  padding: 2em 0 5em 0;
+  padding: 70px 0 5em 0;
 }
 
 .initiallyhidden {
@@ -38,6 +38,10 @@ body {
   margin-top: 3em;
 }
 
+.margin-bottom1 {
+  margin-bottom: 1em;
+}
+
 .margin-bottom2 {
   margin-bottom: 2em;
 }
@@ -60,6 +64,11 @@ body {
 
 .nowrap {
   white-space:nowrap;
+}
+
+.navbar-brand img {
+  width: 20px;
+  height: 20px;
 }
 
 .page-header h1 {
