@@ -30,8 +30,8 @@ $(function(){
     return date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
   };
 
-  var getDateAsDDMMYY = function(date) {
-    return date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear();
+  var getDateAsYYYYMMDD = function(date) {
+    return date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate();
   };
 
   // savely set the year, month and date of a given date
@@ -57,28 +57,28 @@ $(function(){
     var endTime   = timerEndDate.toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'});
     var diffTime  = (new Date(diffMillisecs)).toLocaleTimeString(undefined, {timeZone: "UTC", hour: '2-digit', minute:'2-digit', second:'2-digit'});
 
-    $(".datetime-startdate").text(timerStartDate.toLocaleDateString());
-    $(".datetime-startdate-value").val(getDateAsDDMMYY(timerStartDate));
-    $(".datetime-enddate-value").val(getDateAsDDMMYY(timerEndDate));
+    $('.timeframe-form .datetime-startdate').text(timerStartDate.toLocaleDateString());
+    $('.timeframe-form .datetime-starttime').text(startTime);
+    $('.timeframe-form .datetime-endtime').text(endTime);
 
-    $('.datetime-starttime').text(startTime);
-    $('.datetime-starttime-value').val(getTimeAsHHMMSS(timerStartDate));
+    $('.timeframe-form .datetime-start-value').val(getDateAsYYYYMMDD(timerStartDate)+' '+getTimeAsHHMMSS(timerStartDate));
+    $('.timeframe-form .datetime-end-value').val(getDateAsYYYYMMDD(timerEndDate)+' '+getTimeAsHHMMSS(timerEndDate));
 
-    $('.datetime-endtime').text(endTime);
-    $('.datetime-endtime-value').val(getTimeAsHHMMSS(timerEndDate));
-
-    $('.datetime-timediff').text(diffTime);
+    $('.timeframe-form .datetime-timediff').text(diffTime);
 
     // TODO upstream bug?
-    //$(".timeframe-startdate-datepicker").datepicker('setUTCDate', timerStartDate);
+    //$('.timeframe-form-popup .timeframe-startdate-datepicker').datepicker('setUTCDate', timerStartDate);
 
-    $('.timeframe-starttime-timepicker .timepicker-hh').val(timerStartDate.getHours());
-    $('.timeframe-starttime-timepicker .timepicker-mm').val(timerStartDate.getMinutes());
-    $('.timeframe-starttime-timepicker .timepicker-ss').val(timerStartDate.getSeconds());
+    $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-hh').val(timerStartDate.getHours());
+    $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-mm').val(timerStartDate.getMinutes());
+    $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-ss').val(timerStartDate.getSeconds());
 
-    $('.timeframe-endtime-timepicker .timepicker-hh').val(timerEndDate.getHours());
-    $('.timeframe-endtime-timepicker .timepicker-mm').val(timerEndDate.getMinutes());
-    $('.timeframe-endtime-timepicker .timepicker-ss').val(timerEndDate.getSeconds());
+    $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-hh').val(timerEndDate.getHours());
+    $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val(timerEndDate.getMinutes());
+    $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-ss').val(timerEndDate.getSeconds());
+
+    var wage = diffMillisecs/1000/60/60*$('.timeframe-form input[name=hourly_wage]').val();
+    $('.timeframe-form .timeframe-wage').text(wage.toFixed(2));
   };
 
   // initialize the timer
@@ -90,9 +90,6 @@ $(function(){
     updateTimeframeFormInterval = window.setInterval(updateTimeframeForm, 1000);
     updateDatetime();
     updateTimeframeForm();
-
-    $('.button-timeraction').hide();
-    $('.button-starttimer').show();
   };
 
   if ($('.timeframe-form').length) {
@@ -104,21 +101,23 @@ $(function(){
     window.clearInterval(updateDatetimeInterval);
     window.clearInterval(updateTimeframeFormInterval);
     $('.timeframe-form').removeClass('timeframe-running');
-    $('.button-timeraction').hide();
-    $('.button-savetimeframe').show();
-    $('.timeframe-reset-wrapper').show();
+    $('.timeframe-form').addClass('timeframe-unsaved');
+    $('.timeframe-form .button-timeraction').hide();
+    $('.timeframe-form .button-savetimeframe').show();
+    $('.timeframe-form-popup .timeframe-reset-wrapper').show();
   };
 
   // start the timer
-  $('.button-starttimer').click(function(){
+  $('.timeframe-form .button-starttimer').click(function(){
     timerState = TIMER_RUNNING;
     $('.timeframe-form').addClass('timeframe-running');
-    $('.button-timeraction').hide();
-    $('.button-stoptimer').show();
+    $('.timeframe-form .button-timeraction').hide();
+    $('.timeframe-form .button-stoptimer').show();
+    $('.timeframe-form-popup .timeframe-reset-wrapper').show();
   });
 
   // stop the timer
-  $('.button-stoptimer').click(function(){
+  $('.timeframe-form .button-stoptimer').click(function(){
     clearTimeFrameTimer();
   });
 
@@ -128,32 +127,37 @@ $(function(){
   });
 
   // reset the timer
-  $('.timeframe-reset-wrapper').click(function(){
-    $('.timeframe-reset-wrapper').hide();
+  $('.timeframe-form-popup .timeframe-reset-wrapper').click(function(){
+    clearTimeFrameTimer();
     $('.timeframe-form-popup').hide(100);
+    $('.timeframe-form-popup .timeframe-reset-wrapper').hide();
+    $('.timeframe-form').removeClass('timeframe-running');
+    $('.timeframe-form').removeClass('timeframe-unsaved');
+    $('.timeframe-form .button-timeraction').hide();
+    $('.timeframe-form .button-starttimer').show();
     initTimeframeTimer();
   });
 
   // initialize the datepicker
-  $('.timeframe-startdate-datepicker').datepicker({
+  $('.timeframe-form-popup .timeframe-startdate-datepicker').datepicker({
     todayBtn: "linked",
     todayHighlight: true
   });
 
   // date change event
-  $(".timeframe-startdate-datepicker").on("changeDate", function(event) {
+  $('.timeframe-form-popup .timeframe-startdate-datepicker').on("changeDate", function(event) {
     clearTimeFrameTimer();
-    var startDate = new Date($(".timeframe-startdate-datepicker").datepicker('getUTCDate'));
+    var startDate = new Date($('.timeframe-form-popup .timeframe-startdate-datepicker').datepicker('getUTCDate'));
     setDateByYMD(timerStartDate, startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
     updateTimeframeForm();
   });
 
   // time change event
-  $('.timeframe-starttime-timepicker input').change(function(){
+  $('.timeframe-form-popup .timeframe-starttime-timepicker input').change(function(){
     clearTimeFrameTimer();
-    var h = $('.timeframe-starttime-timepicker .timepicker-hh').val() || 0;
-    var m = $('.timeframe-starttime-timepicker .timepicker-mm').val() || 0;
-    var s = $('.timeframe-starttime-timepicker .timepicker-ss').val() || 0;
+    var h = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-hh').val() || 0;
+    var m = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-mm').val() || 0;
+    var s = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-ss').val() || 0;
     timerStartDate.setHours(h);
     timerStartDate.setMinutes(m);
     timerStartDate.setSeconds(s);
@@ -161,15 +165,37 @@ $(function(){
   });
 
   // time change event
-  $('.timeframe-endtime-timepicker input').change(function(){
+  $('.timeframe-form-popup .timeframe-endtime-timepicker input').change(function(){
     clearTimeFrameTimer();
-    var h = $('.timeframe-endtime-timepicker .timepicker-hh').val() || 0;
-    var m = $('.timeframe-endtime-timepicker .timepicker-mm').val() || 0;
-    var s = $('.timeframe-endtime-timepicker .timepicker-ss').val() || 0;
+    var h = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-hh').val() || 0;
+    var m = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val() || 0;
+    var s = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-ss').val() || 0;
     timerEndDate.setHours(h);
     timerEndDate.setMinutes(m);
     timerEndDate.setSeconds(s);
     updateTimeframeForm();
   });
+
+  // wage change event
+  $('.timeframe-form input[name=hourly_wage]').change(function(){
+    updateTimeframeForm();
+  });
+
+
+  // === saved timeframes ===
+  var timeframe_table_wage_sum = 0;
+  $('.timeframe-table tbody tr').each(function(){
+    var startDate = new Date($(this).find('input[name=datetime_start]').val());
+    var endDate   = new Date($(this).find('input[name=datetime_end]').val());
+    var diffMillisecs = endDate.getTime()-startDate.getTime();
+    var diffTime  = (new Date(diffMillisecs)).toLocaleTimeString(undefined, {timeZone: "UTC", hour: '2-digit', minute:'2-digit', second:'2-digit'});
+    $(this).find('.datetime-timediff').text(diffTime);
+
+    var wage = diffMillisecs/1000/60/60*$(this).find('input[name=hourly_wage]').val();
+    timeframe_table_wage_sum += wage;
+    $(this).find('.timeframe-wage').text(wage.toFixed(2));
+  });
+
+  $('.timeframe-table .timeframe-wage-sum').text(timeframe_table_wage_sum.toFixed(2));
 
 });

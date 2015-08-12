@@ -27,14 +27,14 @@
       <dt></dt><dd><a href="{% url 'timetracker:edit_project' project.id %}" type="button" class="btn btn-default btn-sm margin-top1" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a></dd>
     </dl>
 
-    <form class="row timeframe-form">
+    <form action="" method="post" class="row timeframe-form">
+      <input type="hidden" name="action" value="add_timeframe">
+      {% csrf_token %}
       <a class="datetime-link col-md-3 a-padding1"><span class="datetime-startdate"></span>&nbsp;&nbsp;&nbsp;<span class="datetime-starttime"></span> - <span class="datetime-endtime"></span></a>
-      <input type="hidden" name="" class="datetime-startdate-value">
-      <input type="hidden" name="" class="datetime-starttime-value">
-      <input type="hidden" name="" class="datetime-enddate-value">
-      <input type="hidden" name="" class="datetime-endtime-value">
-      <input type="text" name="" class="col-md-4 input-padding1" value="" placeholder="Summary...">
-      <span class="text-right col-md-4"><span class="datetime-timediff"></span> &times; <input type="number" name="" value="{{ project.default_hourly_wage|stringformat:"f" }}" min="0" step="0.01" class="input-padding1" style="width: 7em;" placeholder="Wage"> = $116</span>
+      <input type="hidden" name="datetime_start" class="datetime-start-value">
+      <input type="hidden" name="datetime_end" class="datetime-end-value">
+      <input type="text" name="summary" class="col-md-4 input-padding1" placeholder="Summary..." required="">
+      <span class="text-right col-md-4"><span class="datetime-timediff"></span> &times; <input type="number" name="hourly_wage" value="{{ project.default_hourly_wage|stringformat:"f"|slice:":2" }}" min="0" step="0.01" class="input-padding1" style="width: 7em;" placeholder="Wage"> = $<span class="timeframe-wage"></span></span>
       <button type="button" class="col-md-1 button-timeraction button-starttimer button-green pull-right button-padding1"><span class="glyphicon glyphicon-play"></span> Start</button>
       <button type="button" class="col-md-1 button-timeraction button-stoptimer button-orange pull-right button-padding1 initiallyhidden"><span class="glyphicon glyphicon-pause"></span> Stop</button>
       <button type="submit" class="col-md-1 button-timeraction button-savetimeframe button-blue pull-right button-padding1 initiallyhidden"><span class="glyphicon glyphicon-ok"></span> Save</button>
@@ -72,15 +72,17 @@
         </thead>
         <tfoot>
           <tr><td>
-            <span class="col-md-4 col-md-offset-7 text-right padding1">&Sigma; $123.12</span>
+            <span class="col-md-4 col-md-offset-7 text-right padding1">&Sigma; $<span class="timeframe-wage-sum"></span></span>
           </td></tr>
         </tfoot>
         <tbody>
         {% for timeframe in project.timeframe_set.all %}
           <tr><td>
             <a class="a-padding1 col-md-3">{{ timeframe.datetime_start|date:"SHORT_DATE_FORMAT" }}&nbsp;&nbsp;&nbsp;{{ timeframe.datetime_start|time:"TIME_FORMAT" }} - {{ timeframe.datetime_end|time:"TIME_FORMAT" }}</a>
-            <input type="text" class="input-padding1 col-md-4" value="{{ timeframe.summary }}">
-            <span class="text-right col-md-4">1:04 &times; <input type="number" min="0" step="0.01" class="input-padding1" style="width: 7em;" value="{{ timeframe.hourly_wage|stringformat:"f" }}"> = $116.00</span>
+            <input type="hidden" name="datetime_start" value="{{timeframe.datetime_start|date:'c'}}">
+            <input type="hidden" name="datetime_end" value="{{timeframe.datetime_end|date:'c'}}">
+            <input type="text" class="input-padding1 col-md-4" value="{{ timeframe.summary }}" required="">
+            <span class="text-right col-md-4"><span class="datetime-timediff"></span> &times; <input type="number" min="0" step="0.01" name="hourly_wage" class="input-padding1" style="width: 7em;" value="{{ timeframe.hourly_wage|stringformat:"f"|slice:":2" }}" placeholder="Wage"> = $<span class="timeframe-wage"></span></span>
             <button type="button" data-toggle="modal" data-target="#deleteTimeframeModal" onclick="$('#deleteTimeframeId').val('{{ timeframe.id }}');" class="pull-right button-padding1 col-md-1"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
           </td></tr>
         {% endfor %}

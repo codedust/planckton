@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import Employer, Project
+from .models import Employer, Project, Timeframe
 
 class BootstrapModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -23,6 +23,11 @@ class ProjectForm(BootstrapModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['employer'].queryset = Employer.objects.filter(user=self.instance.user)
+
+class TimeframeForm(ModelForm):
+    class Meta:
+        model = Timeframe
+        fields = ['hourly_wage', 'datetime_start', 'datetime_end', 'summary']
 
 class DeleteForm(forms.Form):
     id = forms.IntegerField()

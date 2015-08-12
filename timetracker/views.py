@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import EmployerForm, ProjectForm, DeleteForm
+from .forms import EmployerForm, ProjectForm, TimeframeForm, DeleteForm
 from .models import Employer, Project, Timeframe
 
 def index(request):
@@ -97,6 +97,12 @@ def show_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id, user=request.user)
 
     if request.method == "POST":
+        if request.POST.get('action', '') == 'add_timeframe':
+            new_timeframe = Timeframe(user=request.user, project=project)
+            add_form = TimeframeForm(request.POST, instance=new_timeframe)
+            if add_form.is_valid():
+                add_form.save()
+
         if request.POST.get('action', '') == 'delete_timeframe':
             delete_form = DeleteForm(request.POST)
             if delete_form.is_valid():
@@ -105,5 +111,5 @@ def show_project(request, project_id):
 
     return render(request, 'timetracker/show_project.html', {
         'project': project,
-        'timeframe_set': Timeframe.objects.filter(user=request.user, project=project)
+        'timeframe_set': Timeframe.objects.filter(user=request.user, project=project),
     })

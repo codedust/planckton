@@ -93,6 +93,11 @@ body {
   animation: 2s linear 0s normal none infinite running progress-bar-stripes;
 }
 
+.timeframe-unsaved {
+  border-color: #00305A;
+  box-shadow: 0 0 .75em #7ABAF2;
+}
+
 .timeframe-table thead th {
   padding: 1em;
   border-bottom: 1px solid lightgray;
