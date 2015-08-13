@@ -3,10 +3,72 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <div class="page-header">
-      <h1>Welcome to Planckton <small>time tracking online</small></h1>
+  <div class="container-fluid plancton-container">
+    <div class="container">
+      <h1 class="margin-top1 margin-bottom1">Welcome to Planckton!</h1>
+      <p>Planckton stands for <strong>Planck</strong>ton <strong>t</strong>ime
+        <strong>on</strong>line and aims to be a powerful and easy-to-use time
+        tracking software.</p>
+
+      <h3>Is Planckton the right time tracking software for me?</h3>
+      <div class="row">
+        <p class="col-md-6">As plankton cannot swim against the current,
+          Planckton is the right time tracking software for you because you
+          probably cannot go back in time. If you can, this statement needs to
+          be revised. Please file a bug in the bug tracker in this case!</p>
+      </div>
+
+      <a class="btn btn-default margin-top1 margin-bottom3" href="{% url 'timetracker:login' %}" role="button">
+        Login</a>
+
+      <p class="margin-top1 margin-bottom1">
+        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+        <a href="{% url 'timetracker:login' %}#TODO-registration" style="color: white;">
+          Start time tracking today!
+        </a>
+      </p>
+
     </div>
-    <p>Please login to control the time.</p>
+  </div>
+
+  <div class="container margin-top2 glyphicon-presenter">
+    <div class="row margin-top2 margin-bottom2">
+      <div class="col-md-6 col-sm-8 col-md-offset-1 margin-top1">
+        <h2>Free Software</h2>
+        <p>Planckton is free and open-source software. This means you have the
+           right to <em>run the software however you would like</em>, <em> see
+           how the software actually works</em>, <em>redistribute the software
+           however you’d like</em> and you also have the right to <em>improve
+           the program</em>. Check out the source code on
+           <a href="https://github.com/codedust/planckton">github</a>.</p>
+      </div>
+      <div class="col-md-2 col-sm-2 hidden-xs glyphicon-wrapper glyphicon-wrapper-right">
+        <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+      </div>
+    </div>
+    <div class="row margin-bottom2">
+      <div class="col-md-2 col-sm-3 hidden-xs col-md-offset-1 glyphicon-wrapper glyphicon-wrapper-left">
+        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-6 col-sm-8">
+        <h2>Time tracking made easy</h2>
+        <p>Track your time using the built-in timer or just enter your own times.
+           Planckton will do the rest.</p>
+        <p><a href="{% url 'timetracker:index' %}#TODO-about">Tell me more!</a></p>
+      </div>
+    </div>
+    <!-- TODO <div class="row margin-bottom2">
+      <div class="col-md-6 col-sm-8 col-md-offset-1 margin-top1">
+        <h2>Accessible from your phone!</h2>
+        <p>
+          Planckton comes with support for small screens. No matter whether you
+          are working at home, in your office or on the go, Planckton is only
+          one fingertip away.</p>
+      </div>
+      <div class="col-md-2 col-sm-2 hidden-xs glyphicon-wrapper glyphicon-wrapper-right">
+        <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+      </div>
+    </div>-->
+
   </div>
 {% endblock %}

@@ -75,6 +75,36 @@ body {
   font-size: 2.2em;
 }
 
+@keyframes animatedBackground {
+  from { background-position: 0 0; }
+  to { background-position: 100% 100%; }
+}
+
+.plancton-container {
+  margin-top: -20px;
+  background-image: url('img/plancton_header.jpg');
+  background-position: 0px 0px;
+  animation: animatedBackground 45s linear infinite;
+  color: white;
+}
+
+.glyphicon-presenter p {
+  font-size: 1.15em;
+}
+
+.glyphicon-presenter .glyphicon-wrapper {
+  font-size: 10em;
+}
+
+.glyphicon-presenter .glyphicon-wrapper-left {
+  margin-right: .125em;
+}
+
+.glyphicon-presenter .glyphicon-wrapper-right {
+  margin-top: .125em;
+  margin-left: .5em;
+}
+
 .timepicker input {
   width: 5em;
 }
