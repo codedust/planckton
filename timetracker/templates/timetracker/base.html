@@ -14,23 +14,50 @@
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
+        {% if not user.is_authenticated %}
+        <a class="btn btn-default navbar-btn navbar-right pull-right" href="{% url 'timetracker:login' %}" role="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp; Login</a>
+        {% endif %}
 
-        <div class="navbar-header pull-left">
+        <div class="navbar-header">
+          {% if user.is_authenticated %}
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-top-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          {% endif %}
           <a class="navbar-brand" href="/">
             <img alt="Brand" src="{% static 'timetracker/favicon_128.png' %}">
           </a>
           <a class="navbar-brand" href="/">Planckton</a>
         </div>
 
-        <div class="navbar-right pull-right">
-          {% if user.is_authenticated %}
-          <p class="navbar-text pull-left" style="margin-right: 1em;">Signed in as <em>{{ user.username }}</em></p>
-          <a class="btn btn-default navbar-btn" href="{% url 'timetracker:logout' %}" role="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp; Logout</a>
-          {% else %}
-          <a class="btn btn-default navbar-btn" href="{% url 'timetracker:login' %}" role="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp; Login</a>
+        {% if user.is_authenticated %}
+        <div class="collapse navbar-collapse" id="navbar-top-collapse-1">
+          {% if employer_set %}
+          <ul class="nav navbar-nav">
+            <li class="dropdown active">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                {% for employer in employer_set %}
+                {% for project in employer.project_set.all %}
+                <li><a href="{% url 'timetracker:show_project' project.id %}">{{project.name}}</a></li>
+                {% endfor %}
+                {% if employer.project_set.count != 0 %}
+                <li role="separator" class="divider"></li>
+                {% endif %}
+                {% endfor %}
+                <li><a href="{% url 'timetracker:index' %}"><em>Manage projects</em></a></li>
+              </ul>
+            </li>
+          </ul>
           {% endif %}
-        </div>
 
+          <a class="btn btn-default navbar-btn navbar-right" href="{% url 'timetracker:logout' %}" role="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp; Logout</a>
+          <p class="navbar-text navbar-right" style="margin-right: 1em;">Signed in as <em>{{ user.username }}</em></p>
+        </div>
+        {% endif %}
       </div>
     </nav>
 

@@ -117,4 +117,5 @@ def show_project(request, project_id):
     return render(request, 'timetracker/show_project.html', {
         'project': project,
         'timeframe_set': Timeframe.objects.filter(user=request.user, project=project),
+        'employer_set': Employer.objects.filter(user=request.user),
     })

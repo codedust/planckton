@@ -79,7 +79,7 @@ body {
 .plancton-container {
   margin-top: -20px;
   background-image: url('img/plancton_header.jpg');
-  background-position: 0px 0px;
+  background-position: 0 0;
   animation: animatedBackground 45s linear infinite;
   color: white;
 }
