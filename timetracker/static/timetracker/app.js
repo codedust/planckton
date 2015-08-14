@@ -15,7 +15,7 @@ $(function(){
   var timerStartDate;
   var timerEndDate;
   var timerState;
-
+  var endTimeChanged;
   var updateDatetimeInterval, updateTimeframeFormInterval;
   var TIMER_NOT_RUNNING = 0; TIMER_RUNNING = 1;
 
@@ -84,6 +84,7 @@ $(function(){
   // initialize the timer
   var initTimeframeTimer = function() {
     timerState = TIMER_NOT_RUNNING;
+    endTimeChanged = false;
 
     // Using two intervals to improve performance
     updateDatetimeInterval = window.setInterval(updateDatetime, 250);
@@ -161,11 +162,19 @@ $(function(){
     timerStartDate.setHours(h);
     timerStartDate.setMinutes(m);
     timerStartDate.setSeconds(s);
+
+    if (!endTimeChanged) {
+      if ($(this).hasClass('timepicker-hh')) timerEndDate.setHours(h);
+      if ($(this).hasClass('timepicker-mm')) timerEndDate.setMinutes(m);
+      if ($(this).hasClass('timepicker-ss')) timerEndDate.setSeconds(s);
+    }
+
     updateTimeframeForm();
   });
 
   // time change event
   $('.timeframe-form-popup .timeframe-endtime-timepicker input').change(function(){
+    endTimeChanged = true;
     clearTimeFrameTimer();
     var h = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-hh').val() || 0;
     var m = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val() || 0;
