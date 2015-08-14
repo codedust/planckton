@@ -77,7 +77,7 @@ $(function(){
     $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val(timerEndDate.getMinutes());
     $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-ss').val(timerEndDate.getSeconds());
 
-    var wage = diffMillisecs/1000/60/60*$('.timeframe-form input[name=hourly_wage]').val();
+    var wage = (timerEndDate.getTime()-timerStartDate.getTime())/1000/60/60*$('.timeframe-form input[name=hourly_wage]').val();
     $('.timeframe-form .timeframe-wage').text(wage.toFixed(2));
   };
 
