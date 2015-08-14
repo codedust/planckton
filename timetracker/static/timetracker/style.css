@@ -18,10 +18,6 @@ body {
   display: none;
 }
 
-.fullwidth {
-  width: 100%;
-}
-
 .maxwidth50 {
   max-width: 50%;
 }

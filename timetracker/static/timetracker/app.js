@@ -127,7 +127,7 @@ $(function(){
   });
 
   // reset the timer
-  $('.timeframe-form-popup .timeframe-reset-wrapper').click(function(){
+  $('.timeframe-form-popup .timeframe-reset-wrapper button').click(function(){
     clearTimeFrameTimer();
     $('.timeframe-form-popup').hide(100);
     $('.timeframe-form-popup .timeframe-reset-wrapper').hide();
