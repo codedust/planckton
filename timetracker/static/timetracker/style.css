@@ -113,7 +113,6 @@ body {
 
 .timeframe-form-popup {
   position: relative;
-  width: 550px;
   left: 1em;
   top: -3em;
   border: 1px solid lightgray;
@@ -140,6 +139,12 @@ body {
 
 .timeframe-table tfoot td {
   border-top: 1px solid lightgray;
+}
+
+@media (max-width: 980px) {
+  .timeframe-table tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
 }
 
 .padding1 {
