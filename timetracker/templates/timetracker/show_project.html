@@ -24,6 +24,7 @@
     </dl>
 
     <form action="" method="post" class="row timeframe-form">
+      <input type="hidden" name="project_id" value="{{ project.id }}">
       <input type="hidden" name="action" value="add_timeframe">
       {% csrf_token %}
       <a class="datetime-link col-md-3 a-padding1"><span class="datetime-startdate"></span>&nbsp;&nbsp;&nbsp;<span class="datetime-starttime"></span> - <span class="datetime-endtime"></span></a>

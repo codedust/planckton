@@ -1,16 +1,18 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 
-from .forms import EmployerForm, ProjectForm, TimeframeForm, DeleteForm
-from .models import Employer, Project, Timeframe
+from .forms import EmployerForm, ProjectForm, TimeframeForm, ActiveTimerForm, DeleteForm
+from .models import Employer, Project, Timeframe, ActiveTimer
+
 
 def logout_view(request):
     logout(request)
     return redirect('/')
+
 
 def index(request):
     if not request.user.is_authenticated():
@@ -33,6 +35,56 @@ def index(request):
         'employer_set': Employer.objects.filter(user=request.user)
     })
 
+
+def api(request):
+    if not request.user.is_authenticated():
+        return JsonResponse({'error': 'login_required'}, status=403)
+
+    if request.method == "POST":
+        if request.POST.get('action', '') == 'set_timer_status':
+            # start a new timer
+            try:
+                project = Project.objects.get(pk=request.POST.get('project', -1), user=request.user)
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'project_does_not_exist'})
+
+            try:
+                timer = ActiveTimer.objects.get(user=request.user, project=project)
+            except ObjectDoesNotExist:
+                timer = ActiveTimer(user=request.user, project=project)
+
+            active_timer_form = ActiveTimerForm(request.POST, instance=timer)
+
+            if active_timer_form.is_valid():
+                active_timer_form.save()
+            else:
+                return JsonResponse({'error': 'invalid_data'}, status=200)
+
+            return JsonResponse({'success': True}, status=200)
+
+        if request.POST.get('action', '') == 'get_timer_status':
+            # return the status of the timer for a given project
+            try:
+                timer = ActiveTimer.objects.get(user=request.user, project=request.POST.get('project', -1))
+            except ObjectDoesNotExist:
+                return JsonResponse({'error': 'timer_does_not_exist'})
+
+            return JsonResponse({
+                'success': True,
+                'state': timer.state,
+                'hourly_wage': timer.hourly_wage,
+                'datetime_start': timer.datetime_start,
+                'datetime_end': timer.datetime_end,
+                'summary': timer.summary,
+            }, status=200)
+
+        elif request.POST.get('action', '') == 'change_timeframe':
+            # TODO update a previous timeframe
+            return JsonResponse({'error': 'unknown_request'}, status=501)
+
+    return JsonResponse({'error': 'unknown_request'}, status=501)
+
+
 @login_required
 def create_employer(request):
     if request.method == "POST":
@@ -47,6 +99,7 @@ def create_employer(request):
     return render(request, 'timetracker/create_employer.html', {
         'form': create_employer_form,
     })
+
 
 @login_required
 def edit_employer(request, employer_id):
@@ -63,6 +116,7 @@ def edit_employer(request, employer_id):
     return render(request, 'timetracker/edit_employer.html', {
         'form': edit_employer_form,
     })
+
 
 @login_required
 def create_project(request, employer_id):
@@ -81,6 +135,7 @@ def create_project(request, employer_id):
         'form': create_project_form,
     })
 
+
 @login_required
 def edit_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id, user=request.user)
@@ -97,6 +152,7 @@ def edit_project(request, project_id):
         'form': edit_project_form,
     })
 
+
 @login_required
 def show_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id, user=request.user)
@@ -107,6 +163,8 @@ def show_project(request, project_id):
             add_form = TimeframeForm(request.POST, instance=new_timeframe)
             if add_form.is_valid():
                 add_form.save()
+                ActiveTimer.objects.filter(user=request.user, project=project).delete()
+
 
         if request.POST.get('action', '') == 'delete_timeframe':
             delete_form = DeleteForm(request.POST)

@@ -43,3 +43,21 @@ class Timeframe(models.Model):
     datetime_start = models.DateTimeField('Start date and time')
     datetime_end = models.DateTimeField('End date and time')
     summary = models.CharField('Summary', max_length=2000)
+
+class ActiveTimer(models.Model):
+    """
+    An active timeframe is a timer which has not been stopped yet. There should
+    be one timer per user and project at most.
+    """
+    STATE_CHOICES = (
+        (0, 'TIMER_NOT_RUNNING'),
+        (1, 'TIMER_RUNNING'),
+        (2, 'TIMER_UNSAVED'),
+    )
+    user = models.ForeignKey(User)
+    project = models.ForeignKey(Project, primary_key=True)
+    state = models.PositiveSmallIntegerField(choices=STATE_CHOICES)
+    hourly_wage = models.DecimalField('Hourly wage', max_digits=5, decimal_places=2)
+    datetime_start = models.DateTimeField('Start date and time')
+    datetime_end = models.DateTimeField('End date and time')
+    summary = models.CharField('Summary', max_length=2000)

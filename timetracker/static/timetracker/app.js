@@ -41,10 +41,10 @@ $(function(){
   // === timeframe form ===
   var timerStartDate;
   var timerEndDate;
-  var timerState;
   var endTimeChanged;
   var updateDatetimeInterval, updateTimeframeFormInterval;
   var TIMER_NOT_RUNNING = 0, TIMER_RUNNING = 1, TIMER_UNSAVED = 2;
+  var timerState = TIMER_NOT_RUNNING;
 
   var updateDatetime = function() {
     if (timerState == TIMER_NOT_RUNNING) {
@@ -58,7 +58,7 @@ $(function(){
   };
 
   var getDateAsYYYYMMDD = function(date) {
-    return date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate();
+    return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
   };
 
   // savely set the year, month and date of a given date
@@ -116,10 +116,19 @@ $(function(){
     $('.timeframe-form').removeClass('timeframe-running');
     $('.timeframe-form').removeClass('timeframe-unsaved');
 
+    // save the timerstate server-side
+    $.post('/api/', {
+      'action': 'set_timer_status',
+      'project': $('.timeframe-form input[name=project_id]').val(),
+      'state': state,
+      'hourly_wage': $('.timeframe-form input[name=hourly_wage]').val(),
+      'datetime_start': $('.timeframe-form input[name=datetime_start]').val(),
+      'datetime_end': $('.timeframe-form input[name=datetime_end]').val(),
+      'summary': $('.timeframe-form input[name=summary]').val() || " "
+    });
+
     switch (state) {
       case TIMER_NOT_RUNNING:
-        window.clearInterval(updateDatetimeInterval);
-        window.clearInterval(updateTimeframeFormInterval);
         $('.timeframe-form-popup').hide(100);
         $('.timeframe-form-popup .timeframe-reset-wrapper').hide();
         $('.timeframe-form .button-starttimer').show();
@@ -143,10 +152,11 @@ $(function(){
 
   // initialize the timer
   var initTimeframeTimer = function() {
-    setTimerState(TIMER_NOT_RUNNING);
     endTimeChanged = false;
 
     // using two intervals to improve performance
+    window.clearInterval(updateDatetimeInterval);
+    window.clearInterval(updateTimeframeFormInterval);
     updateDatetimeInterval = window.setInterval(updateDatetime, 250);
     updateTimeframeFormInterval = window.setInterval(updateTimeframeForm, 1000);
     updateDatetime();
@@ -158,7 +168,29 @@ $(function(){
 
     $.post('/api/', {
       'action': 'get_timer_status',
-      'project': 14
+      'project': $('.timeframe-form input[name=project_id]').val()
+    }, function(data) {
+      if (!data.success) return;
+
+      var timezone = function(){
+        var offset = (new Date()).getTimezoneOffset();
+        var hours = offset/60;
+        if(Math.abs(hours)<10) hours = ((hours<0)?"+":"-") + "0" + Math.abs(hours);
+        else if (hours > 0) hours = "-"+hours;
+        var minutes = Math.abs(offset%60);
+        if (minutes < 10) minutes = "0"+minutes;
+        return hours+":"+minutes;
+      }();
+
+      timerStartDate = new Date(data.datetime_start.substring(0, data.datetime_start.length-1)+timezone);
+      timerEndDate = new Date(data.datetime_end.substring(0, data.datetime_end.length-1)+timezone);
+      if (data.summary != " ") $('.timeframe-form input[name=summary]').val(data.summary);
+      $('.timeframe-form input[name=hourly_wage]').val(data.hourly_wage);
+      timerState = data.state;
+
+      updateDatetime();
+      updateTimeframeForm();
+      setTimerState(data.state);
     });
   }
 
@@ -199,7 +231,6 @@ $(function(){
 
   // start time change event
   $('.timeframe-form-popup .timeframe-starttime-timepicker input').change(function(){
-    setTimerState(TIMER_UNSAVED);
     var h = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-hh').val() || 0;
     var m = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-mm').val() || 0;
     var s = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-ss').val() || 0;
@@ -214,12 +245,12 @@ $(function(){
     }
 
     updateTimeframeForm();
+    setTimerState(TIMER_UNSAVED);
   });
 
   // end time change event
   $('.timeframe-form-popup .timeframe-endtime-timepicker input').change(function(){
     endTimeChanged = true;
-    setTimerState(TIMER_UNSAVED);
     var h = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-hh').val() || 0;
     var m = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val() || 0;
     var s = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-ss').val() || 0;
@@ -227,11 +258,18 @@ $(function(){
     timerEndDate.setMinutes(m);
     timerEndDate.setSeconds(s);
     updateTimeframeForm();
+    setTimerState(TIMER_UNSAVED);
+  });
+
+  // summary change event
+  $('.timeframe-form input[name=summary]').change(function(){
+    setTimerState(timerState);
   });
 
   // wage change event
   $('.timeframe-form input[name=hourly_wage]').change(function(){
     updateTimeframeForm();
+    setTimerState(timerState);
   });
 
 

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import Employer, Project, Timeframe
+from .models import Employer, Project, Timeframe, ActiveTimer
 
 class BootstrapModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -23,6 +23,11 @@ class ProjectForm(BootstrapModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['employer'].queryset = Employer.objects.filter(user=self.instance.user)
+
+class ActiveTimerForm(ModelForm):
+    class Meta:
+        model = ActiveTimer
+        fields = ['project', 'state', 'hourly_wage', 'datetime_start', 'datetime_end', 'summary']
 
 class TimeframeForm(ModelForm):
     class Meta:

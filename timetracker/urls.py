@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^project/show/(?P<project_id>[0-9]+)/', views.show_project, name='show_project'),
     url(r'^login/', auth_views.login, name='login'),
     url(r'^logout/', views.logout_view, name='logout'),
+    url(r'^api/', views.api, name='api'),
 ]
