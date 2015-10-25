@@ -1,6 +1,33 @@
-$(function(){
+var planckton = function() {
+  var self = {};
 
-  // Make each row that has the data-href attribute set clickable
+  /* getCookie returns the value of the cookie with the given key */
+  self.getCookie = function(key) {
+    var cookies = document.cookie.split(';');
+    for(var i = 0; i < cookies.length; i++) {
+      while (cookies[i].charAt(0) == ' ') {
+        cookies[i] = cookies[i].substring(1, cookies[i].length);
+      }
+      if (cookies[i].indexOf(key + "=") === 0) {
+        return cookies[i].substring(key.length + 1, cookies[i].length);
+      }
+    }
+    return "";
+  };
+
+  return self;
+}();
+
+$(function(){
+  // make jquery send the csrf token with each ajax request
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      xhr.setRequestHeader("X-CSRFToken", planckton.getCookie('csrftoken'));
+    }
+  });
+
+
+  // add onclick handlers to all rows having the data-href attribute set
   $('.table tr[data-href]').each(function(){
     $(this).css('cursor', 'pointer');
 
@@ -17,7 +44,7 @@ $(function(){
   var timerState;
   var endTimeChanged;
   var updateDatetimeInterval, updateTimeframeFormInterval;
-  var TIMER_NOT_RUNNING = 0; TIMER_RUNNING = 1;
+  var TIMER_NOT_RUNNING = 0, TIMER_RUNNING = 1, TIMER_UNSAVED = 2;
 
   var updateDatetime = function() {
     if (timerState == TIMER_NOT_RUNNING) {
@@ -81,12 +108,45 @@ $(function(){
     $('.timeframe-form .timeframe-wage').text(wage.toFixed(2));
   };
 
+  // set the animation state of the timer
+  var setTimerState = function(state) {
+    timerState = state;
+
+    $('.timeframe-form .button-timeraction').hide();
+    $('.timeframe-form').removeClass('timeframe-running');
+    $('.timeframe-form').removeClass('timeframe-unsaved');
+
+    switch (state) {
+      case TIMER_NOT_RUNNING:
+        window.clearInterval(updateDatetimeInterval);
+        window.clearInterval(updateTimeframeFormInterval);
+        $('.timeframe-form-popup').hide(100);
+        $('.timeframe-form-popup .timeframe-reset-wrapper').hide();
+        $('.timeframe-form .button-starttimer').show();
+        break;
+
+      case TIMER_RUNNING:
+        $('.timeframe-form').addClass('timeframe-running');
+        $('.timeframe-form-popup .timeframe-reset-wrapper').show();
+        $('.timeframe-form .button-stoptimer').show();
+        break;
+
+      case TIMER_UNSAVED:
+        window.clearInterval(updateDatetimeInterval);
+        window.clearInterval(updateTimeframeFormInterval);
+        $('.timeframe-form').addClass('timeframe-unsaved');
+        $('.timeframe-form-popup .timeframe-reset-wrapper').show();
+        $('.timeframe-form .button-savetimeframe').show();
+        break;
+    }
+  };
+
   // initialize the timer
   var initTimeframeTimer = function() {
-    timerState = TIMER_NOT_RUNNING;
+    setTimerState(TIMER_NOT_RUNNING);
     endTimeChanged = false;
 
-    // Using two intervals to improve performance
+    // using two intervals to improve performance
     updateDatetimeInterval = window.setInterval(updateDatetime, 250);
     updateTimeframeFormInterval = window.setInterval(updateTimeframeForm, 1000);
     updateDatetime();
@@ -95,31 +155,21 @@ $(function(){
 
   if ($('.timeframe-form').length) {
     initTimeframeTimer();
-  }
 
-  // clear the timer
-  var clearTimeFrameTimer = function() {
-    window.clearInterval(updateDatetimeInterval);
-    window.clearInterval(updateTimeframeFormInterval);
-    $('.timeframe-form').removeClass('timeframe-running');
-    $('.timeframe-form').addClass('timeframe-unsaved');
-    $('.timeframe-form .button-timeraction').hide();
-    $('.timeframe-form .button-savetimeframe').show();
-    $('.timeframe-form-popup .timeframe-reset-wrapper').show();
-  };
+    $.post('/api/', {
+      'action': 'get_timer_status',
+      'project': 14
+    });
+  }
 
   // start the timer
   $('.timeframe-form .button-starttimer').click(function(){
-    timerState = TIMER_RUNNING;
-    $('.timeframe-form').addClass('timeframe-running');
-    $('.timeframe-form .button-timeraction').hide();
-    $('.timeframe-form .button-stoptimer').show();
-    $('.timeframe-form-popup .timeframe-reset-wrapper').show();
+    setTimerState(TIMER_RUNNING);
   });
 
   // stop the timer
   $('.timeframe-form .button-stoptimer').click(function(){
-    clearTimeFrameTimer();
+    setTimerState(TIMER_UNSAVED);
   });
 
   // toggle date and time selection view
@@ -129,13 +179,7 @@ $(function(){
 
   // reset the timer
   $('.timeframe-form-popup .timeframe-reset-wrapper button').click(function(){
-    clearTimeFrameTimer();
-    $('.timeframe-form-popup').hide(100);
-    $('.timeframe-form-popup .timeframe-reset-wrapper').hide();
-    $('.timeframe-form').removeClass('timeframe-running');
-    $('.timeframe-form').removeClass('timeframe-unsaved');
-    $('.timeframe-form .button-timeraction').hide();
-    $('.timeframe-form .button-starttimer').show();
+    setTimerState(TIMER_NOT_RUNNING);
     initTimeframeTimer();
   });
 
@@ -147,15 +191,15 @@ $(function(){
 
   // date change event
   $('.timeframe-form-popup .timeframe-startdate-datepicker').on("changeDate", function(event) {
-    clearTimeFrameTimer();
+    setTimerState(TIMER_UNSAVED);
     var startDate = new Date($('.timeframe-form-popup .timeframe-startdate-datepicker').datepicker('getUTCDate'));
     setDateByYMD(timerStartDate, startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
     updateTimeframeForm();
   });
 
-  // time change event
+  // start time change event
   $('.timeframe-form-popup .timeframe-starttime-timepicker input').change(function(){
-    clearTimeFrameTimer();
+    setTimerState(TIMER_UNSAVED);
     var h = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-hh').val() || 0;
     var m = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-mm').val() || 0;
     var s = $('.timeframe-form-popup .timeframe-starttime-timepicker .timepicker-ss').val() || 0;
@@ -172,10 +216,10 @@ $(function(){
     updateTimeframeForm();
   });
 
-  // time change event
+  // end time change event
   $('.timeframe-form-popup .timeframe-endtime-timepicker input').change(function(){
     endTimeChanged = true;
-    clearTimeFrameTimer();
+    setTimerState(TIMER_UNSAVED);
     var h = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-hh').val() || 0;
     var m = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-mm').val() || 0;
     var s = $('.timeframe-form-popup .timeframe-endtime-timepicker .timepicker-ss').val() || 0;
